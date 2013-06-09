@@ -33,9 +33,10 @@ class CursorHandler(webapp2.RequestHandler):
     client_id = self.request.get('client')
 
     message = {
+      'type': 'move',
+      'client': client_id,
       'x': x,
       'y': y,
-      'client': client_id,
     }
 
     clients = memcache.get('clients')
@@ -56,18 +57,23 @@ class ConnectHandler(webapp2.RequestHandler):
       clients.add(client_id)
 
     memcache.set('clients', clients)
-    import logging
-    logging.error(memcache.get('clients'))
 
 class DisconnectHandler(webapp2.RequestHandler):
   """Handler that will be called when a client disconnects."""
 
   def post(self):
     client_id = self.request.get('from')
-    return None
 
     clients = memcache.get('clients')
-    if clients is not None:
-      clients.remove(client_id)
+    if clients is None:
+      return None
 
+    clients.remove(client_id)
     memcache.set('clients', clients)
+
+    message = {
+      'type': 'disconnect',
+      'client': client_id,
+    }
+    for client in clients:
+        channel.send_message(client, json.dumps(message))

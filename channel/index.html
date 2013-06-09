@@ -19,8 +19,11 @@
 
 		    function onMessage(message) {
 		    	data = $.parseJSON(message.data);
-
-		    	moveCursor(data.client, data.x, data.y);
+		    	if (data.type == 'move') {
+		    		moveCursor(data.client, data.x, data.y);
+		    	} else if (data.type == 'disconnect') {
+		    		destroyCursor(data.client);
+		    	}
 		    }
 
 		    function moveCursor(client, x, y) {
@@ -39,6 +42,10 @@
 		    		class: 'cursor',
 		    		html: '<i class="icon-location-arrow"></i>',
 		    	}).appendTo('body');
+		    }
+
+		    function destroyCursor(client) {
+		    	$('#' + client).remove();
 		    }
 
 			var current_x = -1;
@@ -63,7 +70,6 @@
 			}
 
 			function processMove(x, y) {
-				console.log("e.pageX: " + x + ", e.pageY: " + y);
 				current_x = x;
 				current_y = y;
 			}
