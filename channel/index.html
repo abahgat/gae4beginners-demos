@@ -3,10 +3,10 @@
 	<head>
 		<script src="http://code.jquery.com/jquery-1.9.1.js" type="text/javascript"></script>
 		<script src="/_ah/channel/jsapi" type="text/javascript"></script>
-		<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+		<link href="//netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css" rel="stylesheet">
 		<script type="text/javascript">
-			var clientId = "{{client_id}}";
-			var token = "{{token}}";
+			var client = "{{ client }}";
+			var token = "{{ token }}";
 			var channel = new goog.appengine.Channel('{{ token }}');
 
 			function setUpChannel() {
@@ -19,9 +19,26 @@
 
 		    function onMessage(message) {
 		    	data = $.parseJSON(message.data);
-		    	$('#pall').css('left', data.x + 'px');
-		    	$('#pall').css('top', data.y + 'px');
-		    	console.log(message.data);
+
+		    	moveCursor(data.client, data.x, data.y);
+		    }
+
+		    function moveCursor(client, x, y) {
+		    	var client_id = '#' + client;
+		    	if (! $(client_id).length) {
+		    		createCursor(client);
+		    	}
+
+		    	$(client_id).css('left', x-16 + 'px');
+		    	$(client_id).css('top', y + 'px');
+		    }
+
+		    function createCursor(client) {
+		    	$('<div/>', {
+		    		id: client,
+		    		class: 'cursor',
+		    		html: '<i class="icon-location-arrow"></i>',
+		    	}).appendTo('body');
 		    }
 
 			var current_x = -1;
@@ -38,7 +55,7 @@
 				$.post('/channel', {
 					x: current_x,
 					y: current_y,
-					client_id: clientId
+					client: client
 				});
 
 				last_sent_x = current_x;
@@ -51,21 +68,23 @@
 				current_y = y;
 			}
 
-			setInterval(sendCoordinates, 250);
+			setInterval(sendCoordinates, 500);
 		</script>
 		<style>
-	 		body { background-color: #eef; }
-	      	div { padding: 20px; }
-	      	#pall { 
-	      		transition: top left 250ms;
-	      		-webkit-transition: top left 250ms;
+	 		body {
+	 			background-color: #eef;
+	 		}
+	      	.cursor { 
+	      		transition: all 500ms;
+	      		-webkit-transition: all 500ms;
+	      		font-size: 16px;
+	      		position: absolute;
+	      		height: 16px;
+	      		width: 16px;
 	      	}
 	    </style>
 	</head>
 	<body>
-	  	<div id="log">
-	  		<div id="pall" style="background-color: red; position: absolute; height: 5px; width: 5px;" />
-	  	</div>
 		<script>
 			$(document).on('mousemove',function(e){
 				processMove(e.pageX, e.pageY);
