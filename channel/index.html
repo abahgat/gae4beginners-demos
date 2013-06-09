@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="http://code.jquery.com/jquery-1.9.1.js" type="text/javascript"></script>
+		<script src="/_ah/channel/jsapi" type="text/javascript"></script>
+		<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+		<script type="text/javascript">
+			var clientId = "{{client_id}}";
+			var token = "{{token}}";
+			var channel = new goog.appengine.Channel('{{ token }}');
+
+			function setUpChannel() {
+			    var socket = channel.open();
+			    //socket.onopen = onOpened;
+			    socket.onmessage = onMessage;
+			    //socket.onerror = onError;
+			    //socket.onclose = onClose;
+			}
+
+		    function onMessage(message) {
+		    	data = $.parseJSON(message.data);
+		    	$('#pall').css('left', data.x + 'px');
+		    	$('#pall').css('top', data.y + 'px');
+		    	console.log(message.data);
+		    }
+
+			var current_x = -1;
+			var current_y = -1;
+
+			var last_sent_x = -1;
+			var last_sent_y = -1;
+
+			function sendCoordinates() {
+				if (current_x == last_sent_x && current_y == last_sent_y) {
+					return;
+				}
+
+				$.post('/channel', {
+					x: current_x,
+					y: current_y,
+					client_id: clientId
+				});
+
+				last_sent_x = current_x;
+				last_sent_y = current_y;
+			}
+
+			function processMove(x, y) {
+				console.log("e.pageX: " + x + ", e.pageY: " + y);
+				current_x = x;
+				current_y = y;
+			}
+
+			setInterval(sendCoordinates, 250);
+		</script>
+		<style>
+	 		body { background-color: #eef; }
+	      	div { padding: 20px; }
+	      	#pall { 
+	      		transition: top left 250ms;
+	      		-webkit-transition: top left 250ms;
+	      	}
+	    </style>
+	</head>
+	<body>
+	  	<div id="log">
+	  		<div id="pall" style="background-color: red; position: absolute; height: 5px; width: 5px;" />
+	  	</div>
+		<script>
+			$(document).on('mousemove',function(e){
+				processMove(e.pageX, e.pageY);
+			});
+
+			setUpChannel();
+		</script>
+	</body>
+</html>
