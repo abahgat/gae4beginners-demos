@@ -9,6 +9,11 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
+# API exposed through Endpoints
+- url: /_ah/spi/.*
+  script: endpoints.service.app
+
+# main webapp handlers
 - url: .*
   script: main.app
 
@@ -19,5 +24,6 @@ libraries:
 - name: jinja2
   version: "2.6"
 
+# For channel to handle connect/disconnect events
 inbound_services:
 - channel_presence
