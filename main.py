@@ -13,4 +13,5 @@ app = webapp2.WSGIApplication([
     ('/channel', 'channel.handlers.CursorHandler'),
     ('/_ah/channel/connected/', 'channel.handlers.ConnectHandler'),
     ('/_ah/channel/disconnected/', 'channel.handlers.DisconnectHandler'),
+    ('/endpoints', 'endpoints.handlers.MainHandler'),
 ], debug=True)

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cloud Endpoints demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 20px;
+        padding-bottom: 40px;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="page-header">
+      <h1>Cloud Endpoints <small>on Google AppEngine</small></h1>
+    </div>
+
+    <p class="lead">Use Endpoints to implement a backend service for the following operations. You can verify that your service is configured correctly by visiting <a href="/_ah/api/explorer"><code>/_ah/api/explorer</code></a>. Follow the instructions in this page and hit the <em>Test</em> buttons to test your implementation. To get started, <a href="https://developers.google.com/appengine/docs/java/endpoints/">read the documentation</a>.</p>
+
+    <div class="text-center">
+      <button class="test btn btn-primary" type="button" data-loading-text="Testing...">Test service</button>
+    </div>
+
+    <hr/>
+
+    <div class="media">
+      <span id="addentry" class="label pull-left span1 text-center">TO DO</span>
+      <div class="media-body">
+        <h4 class="media-heading">Add an entry</h4>
+        <p>Implement a <code>POST</code> endpoint at <code>/_ah/api/addressbook/v1/contact</code> that can accept a request like the following:</p>
+        <pre>{"email": "me@example.com", "name": "John Doe"}</pre>
+        <p>The call will create a new <code>model.Contact</code> class and return the id of the newly created entity as follows:</p>
+        <pre>{"id": 5838406743490560}</pre>
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="media">
+      <span id="getentry" class="label pull-left span1 text-center">TO DO</span>
+      <div class="media-body">
+        <h4 class="media-heading">Get the entry</h4>
+        <p>Implement a <code>GET</code> endpoint at <code>/_ah/api/addressbook/v1/contact</code> that, given the id from the previous response, will be able to return the corresponding entry.</p>
+        <p>The request will look like</p>
+        <pre>{"id": 5838406743490560}</pre>
+        <p>and the response will be</p>
+        <pre>{"email": "me@example.com", "id": 5838406743490560, "name": "John Doe"}</pre>
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="media">
+      <span id="listentries" class="label pull-left span1 text-center">TO DO</span>
+      <div class="media-body">
+        <h4 class="media-heading">Get a list of entries</h4>
+        <p>Implement a <code>GET</code> endpoint at <code>/_ah/api/addressbook/v1/contacts</code>. The request will have no fields and the response will be a collection of the contacts we stored so far.</p>
+        <pre>{
+  "contacts": [
+    {
+      "email": "mail@example.com",
+      "id": 5066549580791808,
+      "name": "Test"
+    },
+    {
+     "email": "me@example.com",
+     "id": 5838406743490560,
+     "name": "John Doe"
+    }
+  ]
+}</pre>
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="text-center">
+      <button class="test btn btn-primary" type="button" data-loading-text="Testing...">Test service</button>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+    function testApi() {
+      testStep1();
+    }
+
+    function updateLabel(element_id, text, css_class) {
+      $('#' + element_id).text(text);
+      $('#' + element_id).addClass(css_class);
+    }
+
+    function markFail(element_id) {
+      updateLabel(element_id, 'FAIL', 'label-important');
+    }
+
+    function markPass(element_id) {
+      updateLabel(element_id, 'PASS', 'label-success');
+    }
+
+    function testStep1() {
+      $.ajax({
+        type: 'POST',
+        url: '/_ah/api/addressbook/v1/contact',
+        contentType: 'application/json',
+        data: '{"email": "me@example.com", "name": "John Doe"}',
+        dataType: "json",
+        success: function(data) {
+          if (data.id) {
+            testStep2(data.id);
+            markPass('addentry');
+            return;
+          }
+          markFail('addentry');
+        },
+        error: function(data) {
+          markFail('addentry');
+        }
+      });
+    }
+
+    function testStep2(id) {
+      $.ajax({
+        type: 'GET',
+        url: '/_ah/api/addressbook/v1/contact',
+        data: {"id": id},
+        success: function(data) {
+          if (data.id) {
+            testStep3();
+            markPass('getentry');
+            return;
+          }
+          markFail('getentry');
+        },
+        error: function(data) {
+          markFail('getentry');
+        }
+      });
+    }
+
+    function testStep3() {
+      $.ajax({
+        type: 'GET',
+        url: '/_ah/api/addressbook/v1/contacts',
+        success: function(data) {
+          if (data.contacts && data.contacts.length > 0) {
+            markPass('listentries');
+            return;
+          }
+          markFail('listentries');
+        },
+        error: function(data) {
+          markFail('listentries');
+        }
+      });
+    }
+
+    $(document).ready(function(){
+      $('.test').click(function() {
+        testApi();
+      });
+    });
+    </script>
+
+  </body>
+</html>

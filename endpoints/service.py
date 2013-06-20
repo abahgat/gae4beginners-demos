@@ -24,14 +24,14 @@ class GetContactsResponse(messages.Message):
   contacts = messages.MessageField(ContactMessage, 1, repeated=True)
 
 
-@endpoints.api(name='contacts',version='v1',
-               description='A simple API to manage your contacts')
+@endpoints.api(name='addressbook',version='v1',
+               description='A simple API to manage your address book')
 class ContactApi(remote.Service):
 
   @endpoints.method(ContactMessage,
                     IdMessage,
-                    path='entry',
-                    name='add.entry',
+                    path='contact',
+                    name='add.contact',
                     http_method='POST')
   def add(self, request):
     contact = _BuildContact(request)
@@ -40,8 +40,8 @@ class ContactApi(remote.Service):
 
   @endpoints.method(IdMessage,
                     ContactMessage,
-                    path='entry',
-                    name='get.entry',
+                    path='contact',
+                    name='get.contact',
                     http_method='GET')
   def get(self, request):
     #TODO(abahgat): would this work with placeholders? /_ah/spi/contacts/entity_id
