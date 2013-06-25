@@ -7,49 +7,48 @@
 		<link href="//netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css" rel="stylesheet">
 		<script type="text/javascript">
 			var client = "{{ client }}";
-			var token = "{{ token }}";
 			var channel = new goog.appengine.Channel('{{ token }}');
 
 			function setUpChannel() {
-			    var socket = channel.open();
-			    socket.onmessage = onMessage;
+		    var socket = channel.open();
+		    socket.onmessage = onMessage;
 			}
 
-		    function onMessage(message) {
-		    	data = $.parseJSON(message.data);
-		    	if (data.type == 'move') {
-		    		moveCursor(data.client, parseInt(data.x), parseInt(data.y));
-		    	} else if (data.type == 'disconnect') {
-		    		destroyCursor(data.client);
-		    	}
-		    }
+	    function onMessage(message) {
+	    	data = $.parseJSON(message.data);
+	    	if (data.type == 'move') {
+	    		moveCursor(data.client, parseInt(data.x), parseInt(data.y));
+	    	} else if (data.type == 'disconnect') {
+	    		destroyCursor(data.client);
+	    	}
+	    }
 
-		    function moveCursor(client, x, y) {
-		    	var client_id = '#' + client;
-		    	if (! $(client_id).length) {
-		    		createCursor(client);
-		    	}
-		    	$(client_id).css('left', Math.min(x+1, $(window).width())-16 + 'px');
-		    	$(client_id).css('top', Math.min(y, $(window).height()) + 'px');
-		    }
+	    function moveCursor(client, x, y) {
+	    	var client_id = '#' + client;
+	    	if (! $(client_id).length) {
+	    		createCursor(client);
+	    	}
+	    	$(client_id).css('left', Math.min(x+1, $(window).width())-16 + 'px');
+	    	$(client_id).css('top', Math.min(y, $(window).height()) + 'px');
+	    }
 
-		    function createCursor(client) {
-		    	$('<div/>', {
-		    		id: client,
-		    		class: 'cursor',
-		    		style: 'color: ' + getRandomColor() + ';',
-		    		html: '<i class="icon-location-arrow"></i>',
-		    	}).appendTo('body');
+	    function createCursor(client) {
+	    	$('<div/>', {
+	    		id: client,
+	    		class: 'cursor',
+	    		style: 'color: ' + getRandomColor() + ';',
+	    		html: '<i class="icon-location-arrow"></i>',
+	    	}).appendTo('body');
 
-		    }
+	    }
 
-		    function destroyCursor(client) {
-		    	$('#' + client).remove();
-		    }
+	    function destroyCursor(client) {
+	    	$('#' + client).remove();
+	    }
 
-		    function getRandomColor() {
-		    	return '#'+Math.floor(Math.random()*16777215).toString(16);
-		    }
+	    function getRandomColor() {
+	    	return '#'+Math.floor(Math.random()*16777215).toString(16);
+	    }
 
 			var current_x = -1;
 			var current_y = -1;
