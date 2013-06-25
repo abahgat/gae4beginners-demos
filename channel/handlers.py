@@ -19,61 +19,34 @@ class CursorHandler(webapp2.RequestHandler):
   def get(self):
     client_id = uuid.uuid4().hex
 
-    token = channel.create_channel(client_id)
-
-    template_values = {
-      'client': client_id,
-      'token': token
-    }
+    # TODO create a channel and supply the id and token to the client
+    pass
+    
     self._render_template(template_values)
 
   def post(self):
-    x = self.request.get('x')
-    y = self.request.get('y')
-    client_id = self.request.get('client')
+    """This is where the client will send us messages with the coordinates of the mouse cursor."""
+    # TODO unpack coordinates
+    
+    # TODO pack message for clients
 
-    message = {
-      'type': 'move',
-      'client': client_id,
-      'x': x,
-      'y': y,
-    }
-
-    clients = memcache.get('clients')
-    if clients:
-      for client in clients:
-        channel.send_message(client, json.dumps(message))
+    # TODO send a message to each connected client
+    pass
 
 class ConnectHandler(webapp2.RequestHandler):
   """Handler that will be called when a new client connects."""
 
   def post(self):
-    client_id = self.request.get('from')
-
-    clients = memcache.get('clients')
-    if clients is None:
-      clients = set([client_id])
-    else:
-      clients.add(client_id)
-
-    memcache.set('clients', clients)
+    # TODO add this client to the list of known clients
+    # start from this: client_id = self.request.get('from')
+    pass
 
 class DisconnectHandler(webapp2.RequestHandler):
   """Handler that will be called when a client disconnects."""
 
   def post(self):
-    client_id = self.request.get('from')
+    # TODO forget about this client
+    # client_id = self.request.get('from')
 
-    clients = memcache.get('clients')
-    if clients is None:
-      return None
-
-    clients.remove(client_id)
-    memcache.set('clients', clients)
-
-    message = {
-      'type': 'disconnect',
-      'client': client_id,
-    }
-    for client in clients:
-        channel.send_message(client, json.dumps(message))
+    # TODO notify clients of disappearance ;)
+    pass

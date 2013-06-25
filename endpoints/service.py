@@ -13,38 +13,18 @@ class IdMessage(messages.Message):
   id = messages.IntegerField(1, required=True)
 
 
-class ContactMessage(messages.Message):
-  # id is not required for new entries
-  id = messages.IntegerField(1, required=False)
-  name = messages.StringField(2, required=True)
-  email = messages.StringField(3, required=True)
+# TODO implement the missing messages
 
-
-class GetContactsResponse(messages.Message):
-  contacts = messages.MessageField(ContactMessage, 1, repeated=True)
-
-
-@endpoints.api(name='addressbook',version='v1',
-               description='A simple API to manage your address book')
+# TODO add decorators to declare service
 class ContactApi(remote.Service):
 
-  @endpoints.method(ContactMessage,
-                    IdMessage,
-                    path='contact',
-                    name='add.contact',
-                    http_method='POST')
+  # TODO add decorators to declare method
   def add(self, request):
-    contact = _BuildContact(request)
-    contact.put()
-    return IdMessage(id=contact.key.id())
+    # TODO implement save
+    pass
 
-  @endpoints.method(IdMessage,
-                    ContactMessage,
-                    path='contact',
-                    name='get.contact',
-                    http_method='GET')
+  # TODO add decorators to declare method
   def get(self, request):
-    #TODO(abahgat): would this work with placeholders? /_ah/spi/contacts/entity_id
     entity_id = request.id
     if not entity_id:
       message = 'Request should specify an id.' % entity_id
@@ -58,16 +38,12 @@ class ContactApi(remote.Service):
 
     return _BuildContactMessage(entry)
 
-  @endpoints.method(EmptyRequest,
-                    GetContactsResponse,
-                    path='contacts',
-                    name='get.contacts',
-                    http_method='GET')
+  # TODO implement list message
   def list(self, request):
     contact_messages = []
     for contact in Contact.query().fetch():
-      contact_messages.append(_BuildContactMessage(contact))
-    return GetContactsResponse(contacts=contact_messages)
+      # TODO pack contacts in response
+    
 
 
 def _BuildContactMessage(contact):
